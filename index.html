@@ -318,6 +318,11 @@ mark.cmt { background: color-mix(in srgb, var(--mid) 26%, transparent); color: i
 .topact { display: flex; gap: 8px; align-items: center; }
 .askbtn { min-height: 34px; padding: 4px 10px; font-size: .8rem; border-radius: 999px; }
 .gist { margin: 0; font-size: 1.02rem; line-height: 1.45; }
+.lesson { gap: 10px; padding: 14px; border-radius: 14px; background: var(--accent-soft); border: 1px solid var(--line); }
+.pieces { display: flex; flex-direction: column; gap: 6px; }
+.pieces .pc { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; color: inherit; text-decoration: none; font-size: .95rem; }
+.pieces .pcl { color: var(--muted); font-size: .85rem; }
+.card.hit { border-color: var(--accent); }
 .gpairs { display: flex; flex-direction: column; gap: 6px; }
 .gpair { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "line play" "en play"; text-align: left; justify-content: stretch; align-items: center; gap: 2px 10px; padding: 9px 12px; width: 100%; font-weight: 500; background: var(--sunk); border-color: transparent; }
 .gpair .gline { grid-area: line; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
@@ -828,6 +833,23 @@ nav.tabs a { min-width: 0; }
 .wbbub.finding .wbb.fbest { box-shadow: 0 0 0 5px var(--rc); z-index: 1; }
 .wbbub.finding .wbgl { opacity: .35; }
 .sg-side .sg-clr { font-size: .78rem; font-weight: 700; padding: 4px 8px; background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.rvq { font-size: 1.9rem !important; line-height: 1.2; }
+.rvans { padding: 16px 18px; gap: 4px; }
+.rvans .kk { font-size: 2.1rem; }
+.rvans .kr { font-size: 1.125rem; }
+.rvgrades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.rvgrades button { min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 1rem; padding: 8px 4px; color: var(--ink); }
+.rvgrades button b { white-space: nowrap; }
+.rvgrades button small { font-weight: 500; font-size: .75rem; color: var(--muted); }
+.rvgrades .g0 b { color: var(--bad); } .rvgrades .g1 b { color: var(--mid); } .rvgrades .g2 b { color: var(--good); } .rvgrades .g3 b { color: var(--sky, var(--accent)); }
+.rvgrades button.sug { border: 2px solid var(--accent); background: var(--accent-soft); }
+.rvex { display: flex; flex-direction: column; gap: 6px; background: var(--sunk); border-radius: 14px; padding: 14px 16px; }
+.rvex .en { font-style: italic; font-weight: 600; color: var(--english, var(--ink)); }
+.rvsteps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rvsteps span { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 6px; font-size: .8125rem; text-align: center; line-height: 1.3; }
+.rvgap { display: flex; flex-wrap: wrap; gap: 6px; }
+.rvgap span { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: .8125rem; font-weight: 600; }
+@media (max-width: 380px) { .rvgrades, .rvsteps { grid-template-columns: repeat(2, 1fr); } }
 </style>
 
 <div class="wrap">
@@ -1170,6 +1192,12 @@ const GRAMMAR = [
     P("오늘은 못 가요", "oneureun mot gayo", "I can't go today"),
     P("고기 안 먹어요", "gogi an meogeoyo", "I don't eat meat"),
   ]},
+  // Added later, so it names its own plan day (d) and card-id prefix (id). The lessons above use day = position.
+  { d: 2, id: "g2s", t: "Who it's about: -eun / -neun and -i / -ga", b: "Two tags that sit after a noun. neun (eun after a consonant) marks the topic: what you're talking about, 'as for...'. ga (i after a consonant) marks the subject: the one who does it or is it. When you ask about something it takes ga/i; when you answer, it usually becomes the topic with neun/eun.", ex: [
+    P("제 이름은 앨빈이에요", "je ireumeun aelbinieyo", "My name is Alvin", "ireum ends in a consonant, so eun. Asking was ireumi mwoyeyo? Answering, the name becomes the topic: ireumeun."),
+    P("물이 없어요", "muri eopseoyo", "There's no water", "mul ends in a consonant, so i."),
+    P("커피가 맛있어요", "keopiga masisseoyo", "The coffee is good", "keopi ends in a vowel, so ga."),
+  ]},
 ];
 
 // Hangul track. L = [jamo, romanization, audio syllable, tip]; W = [hangul, romanization, english, writable?]
@@ -1279,6 +1307,9 @@ const GPARTS = {
   "an maewoyo": "an=not#m / maewo=spicy#s+yo=polite#e",
   "oneureun mot gayo": "oneul=today#w+eun=topic#m / mot=can't#m / ga=go#s+yo=polite#e",
   "gogi an meogeoyo": "gogi=meat#w / an=not#m / meogeo=eat#s+yo=polite#e",
+  "je ireumeun aelbinieyo": "je=my#w / ireum=name#w+eun=topic#m / aelbin=Alvin#w+ieyo=is#e",
+  "muri eopseoyo": "mul=water#w+i=subject#m / eopseo=there isn't#s+yo=polite#e",
+  "keopiga masisseoyo": "keopi=coffee#w+ga=subject#m / masisseo=tasty#s+yo=polite#e",
 };
 
 // Simple versions of each pattern: f = the formula, b = one idea per line
@@ -1486,6 +1517,26 @@ const GPLAIN = {
     ["maewoyo", "an maewoyo", "spicy → not spicy", "매워요", "안 매워요"]], t: "With hada verbs it slips in just before ha: gongbu an haeyo = I don't study." },
 };
 
+GPLAIN["Who it's about: -eun / -neun and -i / -ga"] = { g: "Add {neun} to what you're talking about, like \"as for...\". Add {ga} to the one who does it or is it. After a consonant they become {eun} and {i}.", p: [
+    ["jeo", "jeoneun", "me → as for me (the topic)", "저", "저는"],
+    ["ireum", "ireumeun", "name → as for my name (the topic)", "이름", "이름은"],
+    ["chingu", "chinguga", "friend → my friend (who does it)", "친구", "친구가"],
+    ["ireum", "ireumi", "name → the name (what you ask about)", "이름", "이름이"]], t: "Asking, the thing you ask about takes {ga / i}: {ireumi mwoyeyo?} Answering, it becomes the topic: {je ireumeun aelbinieyo}. Japanese has the same pair: [wa] marks the topic like {neun / eun}, and [ga] marks the subject like {ga / i}. Mandarin has no tags; word order does the job." };
+
+// Which lesson teaches each tag or ending in the word parts (GPARTS), by lesson title.
+// Drill cards use it to teach a piece before its full lesson, and Ask uses it to name the exact lesson.
+const PIECES = {
+  neun: "Who it's about: -eun / -neun and -i / -ga", eun: "Who it's about: -eun / -neun and -i / -ga", i: "Who it's about: -eun / -neun and -i / -ga", ga: "Who it's about: -eun / -neun and -i / -ga", ge: "Who it's about: -eun / -neun and -i / -ga",
+  reul: "Verb last, plus little markers", eul: "Verb last, plus little markers",
+  ieyo: "A is B: -ieyo / -yeyo", yeyo: "A is B: -ieyo / -yeyo",
+  e: "Places: -e (to, at) and -eseo (at, from)", eseo: "Places: -e (to, at) and -eseo (at, from)", seo: "Places: -e (to, at) and -eseo (at, from)",
+  ro: "By and toward: -ro / -euro", euro: "By and toward: -ro / -euro",
+  "l geoyeyo": "Future: -l geoyeyo", "eulgeyo": "Future: -l geoyeyo", "lgeyo": "Future: -l geoyeyo",
+  "go sipeoyo": "Want, can, may", "l su isseoyo": "Want, can, may", "l su eopseoyo": "Want, can, may", "do dwaeyo": "Want, can, may", "eodo dwaeyo": "Want, can, may", "ado dwaeyo": "Want, can, may",
+  sseoyo: "Past: -asseoyo / -eosseoyo",
+  an: "Not and can't: an and mot", mot: "Not and can't: an and mot",
+};
+
 // Korean words in English text, marked {like this}; other-language sounds [like this]. Rendered by kx().
 const KMARK = {
 "Same characters as Mandarin gǎnxiè.": "Same characters as Mandarin [gǎnxiè].",
@@ -1585,6 +1636,7 @@ const KMARK = {
 "At the bottom ㅅ is a stopped t, not s.": "At the bottom ㅅ is a stopped {t}, not {s}.",
 "When a block ends in a consonant and the next starts with the silent ㅇ, the consonant slides over: 한국어 is read han-gu-geo. ㅂ before ㄴ turns to m: 감사합니다 is read gam-sa-ham-ni-da. Spelling stays the same, only the sound links up.": "When a block ends in a consonant and the next starts with the silent ㅇ, the consonant slides over: 한국어 is read {han-gu-geo}. ㅂ before ㄴ turns to {m}: 감사합니다 is read {gam-sa-ham-ni-da}. Spelling stays the same, only the sound links up."
 };
+KMARK["Who it's about: -eun / -neun and -i / -ga"] = "Who it's about: {-eun / -neun} and {-i / -ga}";
 
 </script>
 <script id="ks-app">
@@ -1597,10 +1649,15 @@ const OFFLINE_FONTS = "@font-face {\n  font-family: 'Bricolage Grotesque';\n  fo
 if (OFFLINE && OFFLINE_FONTS) document.head.insertAdjacentHTML("beforeend", `<style id="ks-fonts">${OFFLINE_FONTS}</style>`);
 // ---------- items ----------
 const ITEMS = [];
+// Lessons carry a plan day (d) and a card-id prefix (id). Older lessons have neither: day = position, id = "g" + day.
+GRAMMAR.forEach((g, i) => { if (!g.d) g.d = i + 1; if (!g.id) g.id = "g" + g.d; });
+const gOfDay = n => GRAMMAR.filter(g => g.d === n);
+const gByTitle = t => GRAMMAR.find(g => g.t === t);
 DAYS.forEach((d, di) => {
-  d.items.forEach((it, ii) => { it.id = "d" + (di + 1) + "-" + ii; it.day = di + 1; ITEMS.push(it); });
-  const g = GRAMMAR[di];
-  if (g) g.ex.forEach((it, ii) => { it.id = "g" + (di + 1) + "-" + ii; it.day = di + 1; it.pat = g.t; ITEMS.push(it); });
+  const pats = () => gOfDay(di + 1).forEach(g => g.ex.forEach((it, ii) => { it.id = g.id + "-" + ii; it.day = di + 1; it.pat = g.t; ITEMS.push(it); }));
+  const own = () => d.items.forEach((it, ii) => { it.id = "d" + (di + 1) + "-" + ii; it.day = di + 1; ITEMS.push(it); });
+  // From day 2 on, the day's lesson cards come first, so a tag is taught before the day's phrases drill it.
+  if (di) { pats(); own(); } else { own(); pats(); }
 });
 const BYID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 const DAYMS = 86400000;
@@ -1866,9 +1923,9 @@ async function initCaps() {
     const d = await window.claude.use("dictation");
     if (d) {
       dict = d;
-      d.onFinal(({ text }) => { if (dictTarget === "talk") { talk.heard += (talk.heard ? " " : "") + text; talk.partial = ""; tkLive(); return; } dictBuf += text; dictPartial = ""; updateSay(); });
-      d.onPartial(({ text }) => { if (dictTarget === "talk") { talk.partial = text; tkLive(); return; } dictPartial = text; updateSay(); });
-      d.onState(({ state: s }) => { dictState = s; if (dictTarget === "talk") { if (s === "idle") { dictTarget = null; tkFinish(); } return; } updateSay(); if (s === "idle" && dictTarget) finishSay(); });
+      d.onFinal(({ text }) => { if (dictTarget === "rv") { if (rv) { rv.heard += (rv.heard ? " " : "") + text; rv.partial = ""; rvLive(); } return; } if (dictTarget === "talk") { talk.heard += (talk.heard ? " " : "") + text; talk.partial = ""; tkLive(); return; } dictBuf += text; dictPartial = ""; updateSay(); });
+      d.onPartial(({ text }) => { if (dictTarget === "rv") { if (rv) { rv.partial = text; rvLive(); } return; } if (dictTarget === "talk") { talk.partial = text; tkLive(); return; } dictPartial = text; updateSay(); });
+      d.onState(({ state: s }) => { dictState = s; if (dictTarget === "rv") { if (s === "idle") { dictTarget = null; if (rv) rvHeardDone(); } return; } if (dictTarget === "talk") { if (s === "idle") { dictTarget = null; tkFinish(); } return; } updateSay(); if (s === "idle" && dictTarget) finishSay(); });
       if (session && session.phase === "result") renderCard();
     }
   } catch (e) {}
@@ -1896,6 +1953,7 @@ function schedule(id, result, hinted) {
   else if (result === "exact" || result === "close") { c.right++; c.box = Math.min(c.box + 1, INTERVALS.length - 1); c.due = midnight() + INTERVALS[c.box] * DAYMS; }
   else if (result === "almost") { c.box = Math.max(1, Math.min(c.box, 2)); c.due = midnight() + DAYMS; }
   else { c.wrong++; c.box = 0; c.due = 0; }
+  c.ivl = INTERVALS[c.box];
   logAnswer(result === "exact" || result === "close");
 }
 function dueIds() {
@@ -1905,6 +1963,40 @@ function dueIds() {
 function newIds() {
   const pd = planDay();
   return ITEMS.filter(i => i.day <= pd && !introduced(i.id)).map(i => i.id);
+}
+
+// ---------- spaced review (like Anki): see the English, recall the Korean, check, grade yourself ----------
+// Shares state.cards with the daily drill. Adds c.ivl (days until next time) and c.ease (how fast the gap grows).
+// Your own words (state.myWords) join as "m:<hangul>" cards.
+const RV_NEW = 10;
+const mineId = w => "m:" + w.k;
+function rvItem(id) {
+  if (BYID[id]) return BYID[id];
+  if (id.startsWith("m:")) { const w = (state.myWords || []).find(x => mineId(x) === id); if (w) return { id, k: w.k, r: romanize(w.k), e: Array.isArray(w.e) ? w.e[0] : w.e, n: "", mine: true }; }
+  return null;
+}
+const rvMineIds = () => [...new Set((state.myWords || []).map(mineId))];
+const rvMineNew = () => rvMineIds().filter(id => !introduced(id));
+function rvDue(t = Date.now()) {
+  const ids = ITEMS.filter(i => introduced(i.id)).map(i => i.id).concat(rvMineIds().filter(introduced));
+  return ids.filter(id => state.cards[id].due <= t).sort((a, b) => state.cards[a].due - state.cards[b].due);
+}
+const rvCount = () => rvDue().length + rvMineNew().length;
+const rvIvl = c => c.ivl != null ? c.ivl : INTERVALS[c.box || 0];
+function rvNext(c, g) { // g: 0 again, 1 hard, 2 good, 3 easy -> { ivl: days, ease }
+  const ivl = rvIvl(c), ease = c.ease || 2.5, fresh = !c.seen || ivl < 1;
+  if (g === 0) return { ivl: 0, ease: Math.max(1.3, ease - .2) };
+  if (g === 1) return { ivl: fresh ? 1 : Math.max(1, Math.round(ivl * 1.2)), ease: Math.max(1.3, ease - .15) };
+  if (g === 2) return { ivl: fresh ? 1 : ivl < 3 ? 3 : ivl < 7 ? 7 : Math.round(ivl * ease), ease };
+  return { ivl: fresh ? 4 : Math.max(ivl < 3 ? 7 : 0, Math.round(ivl * ease * 1.3)), ease: Math.min(3.5, ease + .15) };
+}
+const rvLabel = d => d < 1 ? "today" : d === 1 ? "1 day" : d === 7 ? "1 week" : d < 14 ? d + " days" : d < 60 ? Math.round(d / 7) + " weeks" : Math.round(d / 30) + " months";
+function rvGrade(id, g) {
+  const c = cardOf(id), n = rvNext(c, g);
+  c.seen++; c.last = Date.now(); c.ivl = n.ivl; c.ease = Math.round(n.ease * 100) / 100;
+  if (g === 0) { c.wrong++; c.lapses = (c.lapses || 0) + 1; c.box = 0; c.due = 0; }
+  else { c.right++; c.due = midnight() + n.ivl * DAYMS; let b = 1; INTERVALS.forEach((d, i) => { if (i && d <= n.ivl) b = i; }); c.box = b; }
+  logAnswer(g > 0);
 }
 
 // ---------- session ----------
@@ -2003,23 +2095,24 @@ function render() {
   const legacy = { plan: ["words", "day"], sounds: ["words", "links"], guide: ["learn", "sounds"], hangul: ["learn", "hangul"] };
   if (legacy[v]) [v, sub] = [legacy[v][0], legacy[v][1] || sub];
   if (v === "learn" && (sub === "hangul" || sub === "typing")) v = "write"; // writing and reading practice live on the Write tab now
-  current = ["today", "learn", "write", "words", "build", "progress", "kit"].includes(v) ? v : "today";
+  current = ["today", "review", "learn", "write", "words", "build", "progress", "kit"].includes(v) ? v : "today";
   if (current === "write") { writeSub = ["home", "hangul", "typing", "blocks"].includes(sub) ? sub : (hs && !hs.paused ? "hangul" : "home"); if (writeSub === "hangul" || writeSub === "typing") learnSub = writeSub; }
   if (current === "learn") learnSub = ["sounds", "grammar", "hangul", "typing", "home"].includes(sub) ? sub : (hs && !hs.paused ? "hangul" : "home");
   if (current === "build" && sub) buildSub = ["blocks", "translate", "talk"].includes(sub) ? sub : buildSub;
   if (current === "words" && sub) wordsMode = ["all", "scene", "day", "links", "review", "mine"].includes(sub) ? sub : wordsMode;
-  document.querySelectorAll("nav.tabs a").forEach(a => a.classList.toggle("on", a.dataset.v === current));
+  document.querySelectorAll("nav.tabs a").forEach(a => a.classList.toggle("on", a.dataset.v === (current === "review" ? "today" : current)));
   applySkin();
   $("#daypill").textContent = "Day " + planDay() + " of 14";
   try { const th = state.opts.theme; if (th) document.documentElement.dataset.theme = th; else delete document.documentElement.dataset.theme; } catch (e) {}
   themeBtn();
-  $("#pagetitle").textContent = current === "today" ? (session && !session.paused ? "Drill" : "Today") : current === "learn" ? "Learn" : current === "write" ? (writeSub === "hangul" && hs && !hs.paused ? "Hangul" : "Write") : current === "kit" ? "Kit" : current[0].toUpperCase() + current.slice(1);
+  $("#pagetitle").textContent = current === "today" ? (session && !session.paused ? "Drill" : "Today") : current === "learn" ? "Learn" : current === "write" ? (writeSub === "hangul" && hs && !hs.paused ? "Hangul" : "Write") : current === "kit" ? "Kit" : current === "review" ? "Review" : current[0].toUpperCase() + current.slice(1);
   if (!(current === "build" && buildSub === "blocks")) { const f = $("#sgf"); if (f) f.remove(); }
   try { useScreen(current === "build" ? "build/" + buildSub : current === "learn" ? "learn/" + learnSub : current === "write" ? "write/" + writeSub : current === "words" ? "words/" + wordsMode : current); } catch (e) {}
   if (current === "today") { if (session && !session.paused) renderCard(); else renderToday(); }
   else if (current === "learn") { if (learnSub === "hangul") renderHangul(); else if (learnSub === "grammar") renderGrammar(); else if (learnSub === "sounds") renderGuide(); else if (learnSub === "typing") renderTyping(); else renderLearnHome(); }
   else if (current === "write") { if (writeSub === "hangul") renderHangul(); else if (writeSub === "typing") renderTyping(); else if (writeSub === "blocks") renderBlockGuide(); else renderWrite(); }
   else if (current === "words") renderWords();
+  else if (current === "review") renderReview();
   else if (current === "kit") renderKit();
   else if (current === "build") renderBuild();
   else renderProgress();
@@ -2063,7 +2156,7 @@ function renderToday() {
   const canMore = (state.unlocked || 1) < 14 && pd < 14 && fresh === 0;
   const sample = state.start ? null : DAYS[0].items[0];
   const nCards = Math.min(due, 50) + Math.min(fresh, 16);
-  const nx = hNext(), hd = hDue().length, G = GRAMMAR[pd - 1];
+  const nx = hNext(), hd = hDue().length, GS = gOfDay(pd), G = GS[0];
   const sc = scnOf(pd), steps = sc ? scnSteps(sc, pd) : [], nDone = steps.filter(x => x.done).length, cur = steps.findIndex(x => !x.done);
   const unl = Math.min(sc ? sc.lines.length : 0, 2 + 2 * nDone);
   const chev = `<span class="chv">${ICON.chev}</span>`;
@@ -2083,13 +2176,14 @@ function renderToday() {
       <button class="tbtn" data-act="listenday" data-day="${pd}" style="align-self:flex-start">${ICON.play} Listen hands-free</button>
       ${canMore || learned ? `<div class="row" style="gap:6px">${learned ? `<button class="ghost small" data-act="weak">Practice weakest</button>` : ""}${canMore ? `<button class="ghost small" data-act="unlock">Start day ${pd + 1} early</button>` : ""}</div>` : ""}
     </div>
+    ${(() => { const n = rvCount(); return `<div class="card tight"><div class="nlist">${row("#review", rv && rv.phase !== "summary" ? `Review · paused at ${rv.i + 1} of ${rv.queue.length}` : `Review · ${n ? `${n} ${n === 1 ? "card" : "cards"} due` : "nothing due"}`, "Flashcards: see the English, say the Korean, then check")}</div></div>`; })()}
     ${!state.start ? `<a class="btn wide" href="#learn/sounds" style="text-decoration:none">New to Korean? Spend 10 minutes on the sound guide first</a>` : ""}
     <div class="card tight stack" style="gap:2px">
       <div class="lab" style="margin-bottom:4px">Basics · keep these going</div>
       <div class="nlist">
         ${nx ? row("", `Hangul · lesson ${nx} of ${HANGUL.length}`, `${kx(HANGUL[nx - 1].t)}. About 15 min`, `data-act="h-open" data-n="${nx}"`) : hd ? row("", "Hangul review", `${hd} ${hd === 1 ? "word" : "words"} due`, `data-act="h-review"`) : row("#write/hangul", "Hangul", "All six lessons done")}
         ${row("#write/typing", "Typing practice", `Hear it, type it. abc or <span lang="ko">한글</span>. 5 min`)}
-        ${G ? row("#learn/grammar", "Grammar: pattern of the day", kx(G.t)) : ""}
+        ${G ? row("#learn/grammar/" + G.id, GS.length > 1 ? "Grammar: patterns of the day" : "Grammar: pattern of the day", GS.map(g => kx(g.t)).join(" · ")) : ""}
         ${row("#learn/sounds", "Sounds + Mandarin head start", "How letters join up, and the 60% you already know")}
       </div>
     </div>
@@ -2161,7 +2255,7 @@ function renderCard() {
       ${kansH(it.k, it.r)}
       ${audioBtns(it)}
       ${linkBox(it)}
-      ${it.pat ? partsHtml(it) : GPARTS[it.r] ? `<div id="partsbox"><button class="ghost small" data-act="showparts" style="align-self:flex-start">Show parts</button></div>` : ""}
+      ${it.pat ? (q.isNew && firstOfPat(it) ? lessonBox(it) : "") + partsHtml(it) + piecesHtml(it) : GPARTS[it.r] ? (q.isNew && piecesOf(it).length ? partsHtml(it) + piecesHtml(it) : `<div id="partsbox"><button class="ghost small" data-act="showparts" style="align-self:flex-start">Show parts</button></div>`) : ""}
       ${it.n ? `<div class="note">${kx(it.n)}</div>` : ""}
       <button class="primary wide" data-act="met">I've got it, now type it</button>
       <div class="txrow">${askB}</div>`;
@@ -2192,7 +2286,7 @@ function renderCard() {
       ${s.hintsUsed >= 3 && (v === "almost") && s.hintCapped ? `<div class="small muted">You used every hint, so this card comes back sooner.</div>` : ""}
       ${(v === "exact" || v === "close") && s.hintsUsed ? `<div class="small muted">You used a hint, so this one comes back tomorrow instead of later.</div>` : ""}
       ${linkBox(it)}
-      ${knownCard(q.id) && (v === "exact" || v === "close") && GPARTS[it.r] ? `<div id="partsbox"><button class="ghost small" data-act="showparts" style="align-self:flex-start">Show parts</button></div>` : partsHtml(it)}
+      ${knownCard(q.id) && (v === "exact" || v === "close") && GPARTS[it.r] ? `<div id="partsbox"><button class="ghost small" data-act="showparts" style="align-self:flex-start">Show parts</button></div>` : partsHtml(it) + piecesHtml(it)}
       <div class="say">
         <div class="lab">Say it</div>
         ${dict ? `<div class="row"><button id="saybtn" data-act="say">${ICON.mic} Say it</button></div><div id="sayheard" class="heard small"></div>`
@@ -2217,6 +2311,18 @@ const GKIND = { w: "word", s: "verb stem", m: "marker", e: "ending", c: "number 
 const partsArr = arr => `<div class="gparts">${arr.map(w => `<span class="gw">${w.map(p => `<span class="gp k-${p.k}" title="${GKIND[p.k]}"><b>${esc(p.t)}</b><i>${esc(p.g)}</i></span>`).join("")}</span>`).join("")}</div>`;
 const parseG = g => g.split(" / ").map(w => w.split("+").map(p => { const [t, rest] = p.split("="), [gl, k] = rest.split("#"); return { t, g: gl, k }; }));
 const partsHtml = it => { const g = GPARTS[it.r]; return g ? partsArr(parseG(g)) : ""; };
+// Tags and endings in a phrase, each with the lesson that teaches it (PIECES in data.js). Skips the card's own lesson.
+function piecesOf(it) {
+  const g = it && GPARTS[it.r]; if (!g || typeof PIECES === "undefined") return [];
+  const out = [], seen = new Set();
+  parseG(g).flat().forEach(p => { if (p.k !== "m" && p.k !== "e") return; const L = PIECES[p.t] && gByTitle(PIECES[p.t]); if (!L || L.t === it.pat || seen.has(p.t)) return; seen.add(p.t); out.push({ t: p.t, g: p.g, L }); });
+  return out;
+}
+// Before the full lesson: a one-line meaning plus when the lesson comes. After it: a link back to the lesson.
+const piecesHtml = it => { const ps = piecesOf(it); if (!ps.length) return ""; const pd = planDay();
+  return `<div class="pieces"><div class="lab">Pieces in this phrase</div>${ps.map(p => `<a class="pc" href="#learn/grammar/${p.L.id}"><span class="ko">${esc(p.t)}</span> = ${esc(p.g)}<span class="pcl">${p.L.d > pd ? `Full lesson on Day ${p.L.d}` : `Lesson: Day ${p.L.d}`} · ${kx(p.L.t)}</span></a>`).join("")}</div>`; };
+const firstOfPat = it => !!it.pat && !ITEMS.some(x => x.pat === it.pat && x.id !== it.id && introduced(x.id));
+const lessonBox = it => { const g = gByTitle(it.pat); return g ? `<div class="lesson stack"><div class="lab">New lesson · Day ${g.d}</div><b>${kx(g.t)}</b>${gExplain(g)}<span class="small muted">Now the first example. It's also under Learn › Grammar.</span></div>` : ""; };
 const gExplain = (g, max = 9) => { const y = typeof GPLAIN !== "undefined" && GPLAIN[g.t];
   if (y) return `<p class="gist">${kx(y.g)}</p><div class="gpairs">${y.p.slice(0, max).map(p => `<button class="gpair" data-act="gpair" data-a="${esc(p[3])}" data-b="${esc(p[4])}" aria-label="Play ${esc(p[0])}, then ${esc(p[1])}"><span class="gline"><span class="gfrom">${esc(p[0])}</span><span class="garr" aria-hidden="true">→</span><span class="gto">${esc(p[1])}</span></span><span class="gen">${p[2].split(" → ").map(x => `“${esc(x)}”`).join(" → ")}</span><span class="gplay">${ICON.play}</span></button>`).join("")}</div>${y.t ? `<p class="small muted gtip">${kx(y.t)}</p>` : ""}`;
   const x = GSIMPLE[g.t]; if (!x) return `<span class="small muted">${esc(g.b)}</span>`;
@@ -2251,11 +2357,11 @@ function wordsList() {
     : `<div class="card empty stack" style="gap:8px;align-items:center"><span class="icirc">${ICON.search}</span><b style="font-size:1.125rem;color:var(--ink)">No word for “${esc(wordsQuery)}” yet</b><span>Tap Add a word and it's yours. We'll find the Korean and the sound.</span><button class="primary" data-act="wb-add" data-pre="${esc(wordsQuery)}">${ICON.plus} Add “${esc(wordsQuery)}”</button></div>`; }
   if (wordsMode === "scene") { const sc = scnOf(); return sc ? `<div class="lab">Today's scene · ${esc(sc.t)}</div><div class="wgrid">${sceneCards()}</div>` : `<div class="card empty">No scene today.</div>`; }
   if (wordsMode === "mine") { const qd = state.wbQueue || [];
-    return `${qd.length ? `<div class="small muted">Waiting to translate: ${qd.map(esc).join(", ")}</div>` : ""}${(state.myWords || []).length ? `<div class="wgrid">${mineCards()}</div>` : `<div class="card empty">Words you add show up here, with their Korean and sound.</div>`}`; }
+    return `${qd.length ? `<div class="small muted">Waiting to translate: ${qd.map(esc).join(", ")}</div>` : ""}${(state.myWords || []).length ? `<a class="nrow card tight" href="#review" style="padding:12px 16px"><span><b>Your words are in Review</b><span class="sub">${rvMineNew().length ? `${rvMineNew().length} new, ` : ""}they come back like flashcards</span></span><span class="chv">${ICON.chev}</span></a><div class="wgrid">${mineCards()}</div>` : `<div class="card empty">Words you add show up here, with their Korean and sound.</div>`}`; }
   if (wordsMode === "links") { const sino = ITEMS.filter(i => i.s);
     return `<div class="card"><p class="small muted" style="margin:0 0 6px">Words that come from Chinese. The Mandarin is in orange. The sound rules are in <a href="#learn/sounds" style="color:var(--accent);font-weight:600">Learn › Sounds</a>.</p><div class="list">${sino.map(wordRow).join("")}</div></div>`; }
   if (wordsMode === "review") { const weak = wordsWeak();
-    return weak.length ? `<div class="card stack" style="gap:8px"><p class="small muted" style="margin:0">Words you've missed or only just met. They're already coming back in your drills.</p><button class="primary" data-act="weak">Practice these now</button><div class="list">${weak.map(wordRow).join("")}</div></div>`
+    return weak.length ? `<div class="card stack" style="gap:8px"><p class="small muted" style="margin:0">Words you've missed or only just met. They're already coming back in your drills.</p><button class="primary" data-act="weak">Practice these now</button><a class="btn" href="#review" style="text-decoration:none;text-align:center">Flashcard review (${rvCount()} due)</a><div class="list">${weak.map(wordRow).join("")}</div></div>`
       : `<div class="card empty">${state.start ? "Nothing shaky right now. Nice." : "Words you miss will collect here once you start day 1."}</div>`; }
   const days = DAYS.map((d, i) => { const n = i + 1, items = d.items, met = items.filter(it => introduced(it.id)).length, strong = items.filter(it => cardOf2(it.id).box >= 3).length;
     const status = met === items.length ? `<span class="tag done">${strong === items.length ? "Strong" : "Learned"}</span>` : n <= pd ? `<span class="tag warm">${n === pd ? "Today" : "In progress"}</span>` : `<span class="tag lock">Upcoming</span>`;
@@ -2279,6 +2385,163 @@ function renderWords() {
     ${wbAddSheet()}
   </div>`;
   $("#wq").oninput = e => { wordsQuery = e.target.value; $("#wlist").innerHTML = wordsList(); };
+}
+// ---------- review screen ----------
+let rv = null, rvRec = null;
+function rvStart(more) {
+  if (!state.start) state.start = Date.now();
+  let ids = rvDue().slice(0, 100).concat(rvMineNew());
+  if (more) ids = ids.concat(newIds().slice(0, RV_NEW));
+  ids = [...new Set(ids)].filter(rvItem);
+  if (!ids.length) return;
+  rv = { queue: ids.map(id => ({ id })), i: 0, phase: "front", typed: "", verdict: null, heard: "", partial: "", counts: [0, 0, 0, 0], listening: false };
+  save(); renderReview(); window.scrollTo(0, 0);
+}
+const rvCur = () => rv && rv.queue[rv.i] && rvItem(rv.queue[rv.i].id);
+function rvShowBack(val) {
+  const it = rvCur(); if (!it) return;
+  rvStopListen();
+  rv.typed = (val || "").trim();
+  rv.verdict = rv.typed ? grade(rv.typed, it) : null;
+  rv.phase = "back"; renderReview(); stopAudio(); playItem(it);
+}
+function rvPick(g) {
+  const q = rv.queue[rv.i]; if (!q) return;
+  stopAudio(); rvGrade(q.id, g); rv.counts[g]++;
+  if (g === 0 && !q.again) rv.queue.splice(Math.min(rv.i + 4, rv.queue.length), 0, { id: q.id, again: true });
+  rv.i++; rv.phase = rv.i >= rv.queue.length ? "summary" : "front"; rv.typed = ""; rv.verdict = null; rv.heard = ""; rv.partial = "";
+  save(); renderReview(); window.scrollTo(0, 0);
+}
+const rvCanHear = () => !!dict || !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+function rvLive() {
+  const el = $("#rvheard"), btn = $("#rvsay"); if (!el) return;
+  const t = (rv.heard + (rv.partial ? " " + rv.partial : "")).trim();
+  el.innerHTML = t ? `Heard: <b lang="ko">${esc(t)}</b>${hasHangul(t) ? ` <span class="muted">(${esc(romanize(t))})</span>` : ""}` : rv.listening ? "Listening… say it in Korean" : "";
+  if (btn) btn.innerHTML = rv.listening ? `${ICON.stop} Stop` : `${ICON.mic} Say it`;
+}
+function rvHeardDone() {
+  rv.listening = false; rv.partial = "";
+  const inp = $("#rvin"); if (inp && rv.heard.trim()) inp.value = rv.heard.trim();
+  rvLive();
+}
+function rvStopListen() { if (rv) rv.listening = false; if (dict && dictTarget === "rv") dict.stop().catch(() => {}); if (rvRec) { try { rvRec.stop(); } catch (e) {} rvRec = null; } }
+function rvListen() {
+  if (rv.listening) { rvStopListen(); return; }
+  stopAudio(); rv.heard = ""; rv.partial = ""; rv.listening = true;
+  if (dict) {
+    dictBuf = ""; dictPartial = ""; dictTarget = "rv";
+    dict.start({ language: "ko" }).catch(() => { dictTarget = null; rv.listening = false; const el = $("#rvheard"); if (el) el.textContent = "Couldn't use the mic here. Say it out loud, then tap Show answer."; });
+  } else {
+    const R = window.SpeechRecognition || window.webkitSpeechRecognition; if (!R) { rv.listening = false; return; }
+    const rec = new R(); rec.lang = "ko-KR"; rec.interimResults = true;
+    rec.onresult = e => { let t = ""; for (const r of e.results) t += r[0].transcript; rv.heard = t; rvLive(); };
+    rec.onend = () => { rvRec = null; rvHeardDone(); };
+    rec.onerror = () => {};
+    rvRec = rec; try { rec.start(); } catch (e) { rv.listening = false; }
+  }
+  rvLive();
+}
+function rvComing() {
+  const ids = ITEMS.filter(i => introduced(i.id)).map(i => i.id).concat(rvMineIds().filter(introduced)), t0 = midnight();
+  const at = d => ids.filter(id => { const x = state.cards[id].due; return x > Date.now() && x < t0 + (d + 1) * DAYMS; }).length;
+  return { tmrw: at(1), week: at(7) };
+}
+function renderReview() {
+  $("#pagetitle").textContent = "Review";
+  const pill = d => `<span>${d}</span>`;
+  if (!rv) {
+    const due = rvDue().length, mineNew = rvMineNew().length, n = due + mineNew, met = ITEMS.filter(i => introduced(i.id)).length, fresh = newIds().length, c = rvComing();
+    $("#view").innerHTML = `<div class="stack" style="gap:16px">
+      <a class="backlink" href="#today">‹ Today</a>
+      <div class="card stack" style="gap:14px">
+        <div class="lab">Review · flashcards</div>
+        <h2 class="ttl">${n ? `${n} ${n === 1 ? "card" : "cards"} ready` : "Nothing due right now"}</h2>
+        <p class="muted" style="margin:0">${n ? `${due} due again${mineNew ? ` and ${mineNew} ${mineNew === 1 ? "word" : "words"} you added` : ""}. About ${Math.max(1, Math.round(n * 0.25))} min.` : met ? `Come back ${c.tmrw ? `tomorrow for ${c.tmrw}` : "later"}, or add new phrases below.` : "Start the daily drill first, or add new phrases below."}</p>
+        <div class="rvsteps" aria-label="Each card">${["1. See the English", "2. Say or type the Korean", "3. Check and listen", "4. Grade yourself"].map(pill).join("")}</div>
+        <button class="primary wide" data-act="rv-start" ${n ? "" : "disabled"}>${ICON.go} Start review${n ? ` (${n})` : ""}</button>
+        ${fresh ? `<button class="obtn" data-act="rv-more">Add ${Math.min(RV_NEW, fresh)} new phrases to this review</button>` : ""}
+        ${met ? `<div class="small muted">Coming back: ${c.tmrw} tomorrow, ${c.week} this week.</div>` : ""}
+      </div>
+      ${rv === null && false ? "" : ""}
+      <div class="card stack" style="gap:12px">
+        <div class="lab">How it works</div>
+        <div class="rvex">
+          <span class="en">“Thank you”</span>
+          <span class="small">You say <span class="ko">gamsahamnida</span> out loud, then tap Show answer.</span>
+          <div class="row" style="gap:8px;align-items:center"><span class="kans" style="padding:8px 12px"><span class="kk" lang="ko" style="font-size:1.25rem">감사합니다</span><span class="kr">gamsahamnida</span></span><button class="rplay" data-act="sayk" data-k="감사합니다" aria-label="Play">${ICON.play}</button></div>
+          <span class="small">Got it easily? Tap <b>Good</b>. It comes back in 1 day, then 3 days, a week, a month.</span>
+        </div>
+        <p style="margin:0"><b>The rule:</b> the better you know a card, the longer it waits before it comes back. Miss it and it comes back today.</p>
+        <div class="rvgap">${["Again: today", "Hard: a bit sooner", "Good: the normal gap", "Easy: a longer gap"].map(pill).join("")}</div>
+      </div>
+    </div>`;
+    return;
+  }
+  if (rv.phase === "summary") {
+    const [a, h, g, e] = rv.counts, c = rvComing();
+    $("#view").innerHTML = `<div class="stack" style="gap:16px">
+      <div class="lab">Review done</div>
+      <h1>${h + g + e} of ${a + h + g + e} remembered</h1>
+      <div class="rvgap"><span>${e} easy</span><span>${g} good</span><span>${h} hard</span><span>${a} again</span></div>
+      <p class="muted" style="margin:0">Cards you knew wait longer now. ${c.tmrw ? `${c.tmrw} come back tomorrow.` : "Nothing comes back tomorrow."}</p>
+      <button class="primary wide" data-act="rv-done">Done</button>
+      ${newIds().length ? `<button class="obtn" data-act="rv-more">Keep going with ${Math.min(RV_NEW, newIds().length)} new phrases</button>` : ""}
+    </div>`;
+    return;
+  }
+  const q = rv.queue[rv.i], it = rvItem(q.id);
+  if (!it) { rv.i++; rv.phase = rv.i >= rv.queue.length ? "summary" : "front"; renderReview(); return; }
+  const isNew = !introduced(q.id);
+  const tag = q.again ? "Again" : isNew ? "New" : "Review";
+  const front = rv.phase === "front";
+  const stp = `<div class="stp">${["Recall", "Check", "Grade"].map((n, k) => (front ? k < 0 : k < 1) ? `<span class="done">✓ ${n}</span>` : `<span class="${(front ? k === 0 : k === 1) ? "now" : ""}">${n}</span>`).join("")}<span class="cnt">${rv.i + 1} of ${rv.queue.length}</span></div>`;
+  const lab = `<div class="lab">${tag}${it.mine ? " · ★ your word" : ""}${it.pat ? " · " + esc(it.pat) : ""}</div>`;
+  let body;
+  if (front) {
+    body = `${lab}
+      <div class="prompt-en rvq">“${esc(it.e)}”</div>
+      <p class="muted" style="margin:0">How do you say this in Korean? Say it out loud${rvCanHear() ? ", tap Say it," : ""} or type it.</p>
+      <form id="rvform" class="stack" autocomplete="off" style="gap:10px">
+        ${rvCanHear() ? `<div class="row" style="gap:8px;align-items:center"><button type="button" id="rvsay" data-act="rv-say">${ICON.mic} Say it</button><div id="rvheard" class="heard small"></div></div>` : ""}
+        <input id="rvin" class="answer" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type it (optional)" aria-label="Your answer">
+        <button type="submit" class="primary wide">Show answer<kbd class="kbd">↵</kbd></button>
+      </form>
+      <div class="txrow"><button class="tbtn" data-act="ask-new">${ICON.help} Ask about this</button><button class="tbtn" data-act="rv-pause">Pause</button></div>`;
+  } else {
+    const c = cardOf(q.id), v = rv.verdict;
+    const sug = v === "exact" || v === "close" ? 2 : v === "almost" ? 1 : v === "wrong" ? 0 : -1;
+    const vt = { exact: "✓ You had it", close: "✓ Almost exactly", almost: "Close. Compare with the answer", wrong: "Not quite. Here it is" }[v];
+    body = `${lab}
+      <div class="qhead"><div class="prompt-en">“${esc(it.e)}”</div><button class="rplay" data-act="rv-play" aria-label="Play Korean">${ICON.play}</button></div>
+      <div class="kans rvans"><span class="kk" lang="ko">${esc(it.k)}</span><span class="kr">${esc(it.r)}</span></div>
+      <div class="row" style="gap:8px"><button class="icon" data-act="rv-play">${ICON.play} Play</button><button class="icon ghost" data-act="rv-slow">${ICON.slow} Slow</button></div>
+      ${v ? `<div class="vbox ${sug === 2 ? "" : sug === 1 ? "mid" : "bad"}"><div class="vt">${vt}</div><div class="yt">You ${rv.heard && rv.typed === rv.heard.trim() ? "said" : "typed"}: <b>${esc(rv.typed)}</b>${hasHangul(rv.typed) ? ` (${esc(romanize(rv.typed))})` : ""}</div>${v === "almost" || v === "wrong" ? diffHtml(hasHangul(rv.typed) ? romanize(rv.typed) : rv.typed, it) : ""}</div>` : ""}
+      ${linkBox(it)}
+      ${it.n ? `<div class="note">${kx(it.n)}</div>` : ""}
+      <div class="lab" style="margin-top:4px">How well did you know it?</div>
+      <div class="rvgrades">${["Again", "Hard", "Good", "Easy"].map((n, g) => `<button class="g${g} ${g === sug ? "sug" : ""}" data-act="rv-g" data-g="${g}"><b>${n}</b><small>${rvLabel(rvNext(c, g).ivl)}</small><kbd class="kbd" style="margin:0">${g + 1}</kbd></button>`).join("")}</div>
+      <div class="txrow"><button class="tbtn" data-act="ask-new">${ICON.help} Ask about this</button><button class="tbtn" data-act="rv-pause">Pause</button></div>`;
+  }
+  $("#view").innerHTML = `<div class="stack">${stp}<div class="card stack" style="gap:14px">${body}</div>
+    <div class="tip">${front ? `<div class="lab">Why recall first</div><p>Pulling a phrase out of your memory is what makes it stick. Peeking first doesn't.</p>` : `<div class="lab">Be honest</div><p>Grading yourself honestly keeps the gaps right. Hard or Again just means you see it sooner.</p>`}</div></div>`;
+  if (front) {
+    const inp = $("#rvin");
+    $("#rvform").addEventListener("submit", e => { e.preventDefault(); rvShowBack(inp.value); });
+    if (window.matchMedia && matchMedia("(hover: hover)").matches) setTimeout(() => inp && inp.focus(), 60);
+    rvLive();
+  }
+}
+function reviewAct(act, b) {
+  switch (act) {
+    case "rv-start": stopListening(); rvStart(false); break;
+    case "rv-more": stopListening(); rvStart(true); break;
+    case "rv-say": rvListen(); break;
+    case "rv-g": rvPick(+b.dataset.g); break;
+    case "rv-play": { const it = rvCur(); if (it) { stopAudio(); playItem(it); } break; }
+    case "rv-slow": { const it = rvCur(); if (it) { stopAudio(); playItem(it, true); } break; }
+    case "rv-pause": rvStopListen(); stopAudio(); location.hash = "#today"; break;
+    case "rv-done": rv = null; save(); render(); window.scrollTo(0, 0); break;
+  }
 }
 function renderKit() {
   const sample = ITEMS.find(i => GPARTS[i.r] && i.s) || ITEMS[0];
@@ -2462,11 +2725,13 @@ function renderGrammar() {
   const pd = planDay();
   $("#view").innerHTML = `<div class="stack">${learnHead("grammar")}
     <p class="muted" style="margin:0">One pattern a day. Each example is split into parts, and the colors show what each part does.</p>${gLegend()}
-    ${GRAMMAR.map((g, i) => `<div class="card stack" style="gap:6px">
-      <div class="row" style="justify-content:space-between"><span class="small muted">Day ${i + 1}</span>${i + 1 === pd ? `<span class="tag warm">Today</span>` : i + 1 < pd ? `<span class="tag done">Done</span>` : ""}</div>
+    ${[...GRAMMAR].sort((x, y) => x.d - y.d).map(g => `<div class="card stack" id="gl-${g.id}" style="gap:6px;scroll-margin-top:96px">
+      <div class="row" style="justify-content:space-between"><span class="small muted">Day ${g.d}</span>${g.d === pd ? `<span class="tag warm">Today</span>` : g.d < pd ? `<span class="tag done">Done</span>` : ""}</div>
       <b>${kx(g.t)}</b>${gExplain(g)}
       <div class="list">${g.ex.map(rowHtml).join("")}</div></div>`).join("")}
   </div>`;
+  const want = (location.hash.split("/")[2] || "").trim(), el = want && document.getElementById("gl-" + want);
+  if (el) setTimeout(() => { el.scrollIntoView({ block: "start" }); el.classList.add("hit"); }, 60);
 }
 const cardOf2 = id => state.cards[id] || { box: 0 };
 
@@ -4102,6 +4367,22 @@ const HOVER = window.matchMedia && matchMedia("(hover: hover) and (pointer: fine
 const ask = { quote: "", ctx: "", screen: "", note: null, busy: false, ctl: null, err: "", stream: "" };
 let pendingSel = null;
 const screenName = () => ({ today: session && !session.paused ? "Drill card" : "Today", learn: "Learn › " + learnSub, words: "Words", build: "Sentence Builder", progress: "Progress", kit: "Kit" })[current] || current;
+// The plan as Ask sees it: each day, its lessons, and which lesson teaches each tag.
+function lessonMap() {
+  const days = DAYS.map((d, i) => { const gs = gOfDay(i + 1); return `Day ${i + 1}: ${d.t}.${gs.length ? " Grammar lesson" + (gs.length > 1 ? "s" : "") + ": " + gs.map(g => `"${g.t}"`).join(" and ") + "." : ""}`; }).join("\n");
+  const by = {}; Object.entries(typeof PIECES !== "undefined" ? PIECES : {}).forEach(([p, t]) => { (by[t] = by[t] || []).push(p); });
+  const tags = Object.entries(by).map(([t, ps]) => { const g = gByTitle(t); return g ? `${ps.join(", ")}: Day ${g.d}, "${t}"` : ""; }).filter(Boolean).join("\n");
+  return `${days}\nWhich lesson teaches each tag or ending:\n${tags}`;
+}
+function askCard() {
+  let it = null;
+  const q = session && !session.paused && session.phase && session.phase !== "summary" && session.queue[session.i];
+  if (q) it = BYID[q.id];
+  else if (current === "review" && rv && rv.queue && rv.queue[rv.i]) it = rvItem(rv.queue[rv.i].id);
+  if (!it) return "";
+  const ps = piecesOf(it).map(p => `${p.t} = ${p.g} (Day ${p.L.d} lesson "${p.L.t}")`).join("; ");
+  return `{${it.r}} = "${it.e}". ${it.day ? `A Day ${it.day} card` : "One of the learner's own words"}${it.pat ? `, an example for the Day ${it.day} lesson "${it.pat}"` : ""}.${ps ? " Its tags and endings: " + ps + "." : ""}${GPARTS[it.r] ? " Parts: " + GPARTS[it.r].replace(/#\w/g, "") + "." : ""}`;
+}
 function askPrompt(n, question) {
   const script = state.opts.hangul ? "You may add Hangul in parentheses after the romanization." : "Never write Hangul. Never write Chinese or Japanese characters.";
   return `You are a friendly, precise Korean tutor answering a question inside a Korean learning app.
@@ -4112,8 +4393,12 @@ Rules:
 - Plain text. You may use **bold** and lines starting with "- " for bullets.
 - Wrap EVERY Korean word or fragment in curly braces, like {annyeonghaseyo} or {-yo}, so the app can style it apart from English. Wrap Mandarin pinyin or Japanese romaji in square brackets, like [xièxie]. Never put English inside braces.
 - When you break a phrase down, show each piece as: piece = meaning.
-- If a Mandarin or Japanese link would help them remember, give one briefly.
+- If a Mandarin or Japanese link would help them remember, give one briefly, and only if it is accurate. Facts to get right: Japanese [wa] marks the topic, like Korean {eun / neun}. Japanese [ga] marks the subject, like Korean {i / ga}. Japanese [o] is like {eul / reul}, [ni] like {e}, [de] like {eseo} (where an action happens). Mandarin has no such tags; word order does that job. Never say Japanese [ga] marks the topic.
+- You know this app's lesson map (below). When asked where something is taught, name the exact place, like: Learn › Grammar, Day 2, "${(GRAMMAR.find(g => g.id === "g2s") || GRAMMAR[1]).t}". If no lesson covers it, say so plainly and teach it in a few lines.
 
+The learner is on Day ${planDay()} of 14. The app's lesson map:
+${lessonMap()}
+${n.card || askCard() ? `\nCard on screen: ${n.card || askCard()}\n` : ""}
 Screen: ${n.screen}
 ${n.quote ? `Highlighted text: «${n.quote}»\n` : ""}Nearby text on screen: «${n.ctx}»
 
@@ -4159,7 +4444,7 @@ function openAsk(note) {
   const ta = $("#askin"); if (ta && !note.turns.length) setTimeout(() => ta.focus(), 50);
 }
 function newNote(quote, ctx) {
-  return { id: "n" + Date.now().toString(36), route: location.hash || "#today", screen: screenName(), quote, ctx, turns: [], at: Date.now() };
+  return { id: "n" + Date.now().toString(36), route: location.hash || "#today", screen: screenName(), card: askCard(), quote, ctx, turns: [], at: Date.now() };
 }
 function closeAsk() {
   if (ask.ctl) ask.ctl.abort();
@@ -4315,6 +4600,7 @@ document.addEventListener("click", e => {
   if (act.startsWith("h-")) { hangulAct(act, b); return; }
   if (act.startsWith("wb-")) { blocksAct(act, b); return; }
   if (act.startsWith("off-")) { offlineAct(act, b); return; }
+  if (act.startsWith("rv-")) { reviewAct(act, b); return; }
   switch (act) {
     case "play": if (it) playItem(it); break;
     case "slow": if (it) playItem(it, true); break;
@@ -4336,7 +4622,7 @@ document.addEventListener("click", e => {
       if (lvl >= 2) lines.push("Starts with: {" + ws.map(w => w.slice(0, 1) + "…").join(" ") + "}");
       if (lvl >= 3) lines.push("Half: {" + ws.map(w => w.slice(0, Math.ceil(w.length / 2)) + "…").join(" ") + "}");
       h.innerHTML = lines.map(l => kfmt(esc(l))).join("<br>"); b.textContent = lvl < 3 ? "More hint" : "No more hints"; if (lvl >= 3) b.disabled = true; break; }
-    case "showparts": { const q = session.queue[session.i], box = $("#partsbox"); if (box) box.innerHTML = partsHtml(BYID[q.id]); break; }
+    case "showparts": { const q = session.queue[session.i], box = $("#partsbox"); if (box) box.innerHTML = partsHtml(BYID[q.id]) + piecesHtml(BYID[q.id]); break; }
     case "next": stopAudio(); if (dict && dict.active()) dict.stop().catch(() => {}); nextCard(); break;
     case "quit": stopAudio(); if (session) { if (session.phase === "summary") session = null; else session.paused = true; } save(); render(); window.scrollTo(0, 0); break;
     case "end": stopAudio(); session = null; save(); render(); break;
@@ -4386,13 +4672,17 @@ function stopListening() { if (listening) { listening.stop = true; listening = n
 document.addEventListener("keydown", e => {
   if (!$("#asksheet").hidden) return;
   if (hs && current === "learn" && learnSub === "hangul" && hs.phase === "result" && e.key === "Enter" && !(e.target && e.target.tagName === "BUTTON")) { e.preventDefault(); stopAudio(); hNextCard(); return; }
+  if (rv && current === "review" && rv.phase === "back" && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) {
+    if (/^[1-4]$/.test(e.key)) { e.preventDefault(); rvPick(+e.key - 1); return; }
+    if (e.key === " ") { e.preventDefault(); const it = rvCur(); if (it) { stopAudio(); playItem(it); } return; }
+  }
   if (!session || current !== "today") return;
   if (e.key === "Enter" && session.phase === "result" && !(e.target && e.target.tagName === "BUTTON")) { e.preventDefault(); stopAudio(); nextCard(); }
   else if (e.key === "Enter" && session.phase === "meet" && !(e.target && e.target.tagName === "BUTTON")) { e.preventDefault(); session.queue[session.i].met = true; session.phase = "prompt"; renderCard(); }
 });
-window.addEventListener("hashchange", () => { stopListening(); wbAdd.open = false; render(); window.scrollTo(0, 0); });
+window.addEventListener("hashchange", () => { stopListening(); rvStopListen(); wbAdd.open = false; render(); window.scrollTo(0, 0); });
 
-window.__test = { cleanWord, wbSyncMine, get wbAdd() { return wbAdd; }, wbBuild, wbRandom, WB, hasBatchim, blocksAct, get wb() { return wb; }, set wb(v) { wb = v; }, mdLite, askPrompt, looseJson, cleanResult, buildPrompt, bState, grade, romanize, skel, ITEMS, AUDIO, SOUND_GUIDE, compose, jamo, HANGUL, GPARTS };
+window.__test = { rvNext, rvGrade, rvDue, rvCount, rvItem, get rv() { return rv; }, get state() { return state; }, cleanWord, wbSyncMine, get wbAdd() { return wbAdd; }, wbBuild, wbRandom, WB, hasBatchim, blocksAct, get wb() { return wb; }, set wb(v) { wb = v; }, mdLite, askPrompt, looseJson, cleanResult, buildPrompt, bState, grade, romanize, skel, ITEMS, AUDIO, SOUND_GUIDE, compose, jamo, HANGUL, GPARTS };
 restoreLive();
 render();
 initCloud();
